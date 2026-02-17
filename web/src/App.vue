@@ -6,6 +6,16 @@
           <img src="../public/img/small-logo.png" alt="Logo" class="header-logo">
           <h1 class="header-title">ZJ–Huawei Classroom</h1>
         </div>
+        <div class="header-actions">
+          <div v-if="authStore.isAuthenticated" class="user-menu">
+            <span class="user-name">Welcome, {{ authStore.user?.username || 'User' }}</span>
+            <button @click="handleLogout" class="logout-btn">Logout</button>
+          </div>
+          <div v-else class="auth-buttons">
+            <router-link to="/login" class="nav-btn">Login</router-link>
+            <router-link to="/register" class="nav-btn primary">Register</router-link>
+          </div>
+        </div>
       </div>
     </header>
     <main class="app-main">
@@ -20,6 +30,19 @@
     </footer>
   </div>
 </template>
+
+<script setup>
+import { useAuthStore } from './stores/auth';
+import { useRouter } from 'vue-router';
+
+const authStore = useAuthStore();
+const router = useRouter();
+
+const handleLogout = () => {
+  authStore.logout();
+  router.push('/login');
+};
+</script>
 
 <style>
 /* ===== CSS Design Tokens ===== */
@@ -123,6 +146,68 @@ body {
   font-weight: 700;
   color: var(--color-text-primary);
   letter-spacing: -0.02em;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-btn {
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.nav-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.nav-btn.primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.nav-btn.primary:hover {
+  background: var(--color-primary-dark);
+}
+
+.logout-btn {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all var(--transition-fast);
+}
+
+.logout-btn:hover {
+  background: var(--color-danger);
+  color: white;
 }
 
 /* ===== App Main ===== */

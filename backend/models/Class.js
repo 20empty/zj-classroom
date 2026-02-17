@@ -57,6 +57,15 @@ const Class = sequelize.define('Class', {
     allowNull: true,
     defaultValue: [],
     comment: '班级课程列表'
+  },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: true, // Allow null initially for migration safety
+    comment: '创建者ID',
+    references: {
+      model: 'Users', // Assuming table name is 'Users' (Sequelize default pluralization)
+      key: 'id'
+    }
   }
 }, {
   tableName: 'classes',
