@@ -4,6 +4,7 @@ const Student = require('./Student');
 const Todo = require('./Todo');
 const CourseLibrary = require('./CourseLibrary');
 const Announcement = require('./Announcement');
+const User = require('./User'); // Import User model
 
 // 定义模型关联
 Class.hasMany(Student, { foreignKey: 'classId', as: 'students' });
@@ -15,23 +16,27 @@ Todo.belongsTo(Class, { foreignKey: 'classId', as: 'class' });
 Class.hasMany(Announcement, { foreignKey: 'classId', as: 'announcements' });
 Announcement.belongsTo(Class, { foreignKey: 'classId', as: 'class' });
 
+User.hasMany(Class, { foreignKey: 'userId', as: 'classes' });
+Class.belongsTo(User, { foreignKey: 'userId', as: 'creator' });
+
 // 初始化数据库
 const initDatabase = async () => {
   try {
     await sequelize.authenticate();
     console.log('数据库连接成功');
-    
+
     // 同步数据库（创建表）
     await sequelize.sync({ force: false }); // force: true 会删除现有表
     console.log('数据库表同步成功');
-    
+
     // 初始化示例数据
     await initSampleData();
-    
+
   } catch (error) {
     console.error('数据库初始化失败:', error);
   }
 };
+
 
 // 初始化示例数据
 const initSampleData = async () => {
@@ -169,5 +174,6 @@ module.exports = {
   Todo,
   CourseLibrary,
   Announcement,
+  User,
   initDatabase
 };
