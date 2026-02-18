@@ -1,13 +1,14 @@
-# 智慧课堂后端API接口文档
+# 浙华Classroom API 接口文档
 
 ## 概述
 
-本文档描述了智慧课堂系统的后端API接口，基于Express.js和SQLite数据库构建。系统提供班级管理、学生管理、课程管理、待办事项管理和课程库管理等功能。
+本文档描述了智慧课堂系统的后端API接口，基于Express.js和 **MySQL** 数据库构建。系统提供用户认证、班级管理、学生管理、课程管理、待办事项管理和课程库管理等功能。
 
 **基础信息：**
 - 服务器地址：`http://localhost:3001`
 - 数据格式：JSON
 - 字符编码：UTF-8
+- **认证方式**: Bearer Token (JWT)
 
 ## 通用响应格式
 
@@ -74,6 +75,71 @@
       }
     }
   ]
+}
+```
+
+## 2. 用户认证接口
+
+### 2.1 用户注册
+**接口地址：** `POST /api/auth/register`
+
+**功能描述：** 注册新用户
+
+**请求参数：**
+```json
+{
+  "username": "用户名",
+  "email": "邮箱",
+  "password": "密码"
+}
+```
+
+**响应示例：**
+```json
+{
+  "message": "User registered successfully",
+  "userId": 1
+}
+```
+
+### 2.2 用户登录
+**接口地址：** `POST /api/auth/login`
+
+**功能描述：**以此获取访问令牌 (Token)
+
+**请求参数：**
+```json
+{
+  "email": "邮箱",
+  "password": "密码"
+}
+```
+
+**响应示例：**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR...",
+  "user": {
+    "id": 1,
+    "username": "testuser",
+    "email": "test@example.com",
+    "role": "student"
+  }
+}
+```
+
+### 2.3 获取当前用户信息
+**接口地址：** `GET /api/auth/me`
+
+**请求头：** `Authorization: Bearer <token>`
+
+**响应示例：**
+```json
+{
+  "id": 1,
+  "username": "testuser",
+  "email": "test@example.com",
+  "role": "student"
 }
 ```
 
@@ -549,7 +615,16 @@
 
 ## 7. 数据模型说明
 
-### 7.1 班级模型 (Class)
+### 7.1 用户模型 (User)
+| 字段名 | 类型 | 说明 | 必填 |
+|--------|------|------|------|
+| id | INTEGER | 主键，自增 | 是 |
+| username | STRING | 用户名 | 是 |
+| email | STRING | 邮箱 (Unique) | 是 |
+| password_hash | STRING | 密码哈希 | 是 |
+| role | ENUM | 角色 (student/teacher/admin) | 是 |
+
+### 7.2 班级模型 (Class)
 | 字段名 | 类型 | 说明 | 必填 |
 |--------|------|------|------|
 | id | INTEGER | 主键，自增 | 是 |
@@ -562,6 +637,7 @@
 | date | STRING | 培训时间 | 否 |
 | customer | STRING | 培训对象 | 否 |
 | coordinator | STRING | 班主任 | 否 |
+| userId | INTEGER | 创建者ID (外键) | 否 |
 
 ### 7.2 学生模型 (Student)
 | 字段名 | 类型 | 说明 | 必填 |
