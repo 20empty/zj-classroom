@@ -1,4 +1,75 @@
-# MySQL数据库部署指南
+# 浙华Classroom 部署指南
+
+## 📋 环境要求
+
+- **Node.js**: v18+
+- **MySQL**: v5.7+ 或 v8.0+
+- **npm**: v8+
+
+## 🚀 部署步骤
+
+### 1. 数据库准备
+
+1. 安装 MySQL (如果尚未安装)。
+2. 创建数据库 `zj_classroom`。
+   ```bash
+   mysql -u root -p
+   CREATE DATABASE zj_classroom CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+3. 初始化数据表 (可选，应用启动时会自动创建)。
+   ```bash
+   cd backend
+   npm run init-db
+   ```
+
+### 2. 后端部署
+
+1. 进入后端目录并安装依赖：
+   ```bash
+   cd backend
+   npm install
+   ```
+
+2. 配置环境变量：
+   复制 `.env.example` 为 `.env` (如果没有则新建)，并填入数据库信息：
+   ```env
+   DB_HOST=localhost
+   DB_PORT=3306
+   DB_NAME=zj_classroom
+   DB_USER=root
+   DB_PASSWORD=your_password
+   PORT=3001
+   ```
+
+3. 启动后端服务：
+   ```bash
+   npm start
+   ```
+
+### 3. 前端部署
+
+1. 进入前端目录并安装依赖：
+   ```bash
+   cd web
+   npm install
+   ```
+
+2. 启动开发服务器：
+   ```bash
+   npm run serve
+   ```
+   访问 `http://localhost:8080` 即可看到应用。
+
+## 🔍 故障排除
+
+- **数据库连接失败**: 检查 `.env` 中的账号密码是否正确，MySQL 服务是否已启动。
+- **端口冲突**: 默认后端端口 3001，前端端口 8080。如被占用请修改配置文件。
+
+## 🔒 生产环境建议
+
+- 使用 PM2 管理后端进程：`pm2 start index.js --name zj-backend`
+- 前端使用 Nginx 部署 `dist` 目录构建产物。
+- 数据库开启定期备份。
 
 ## 📋 前置要求
 

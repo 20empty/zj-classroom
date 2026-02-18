@@ -1,36 +1,29 @@
-# 浙华Classroom数据库改造项目文档
+# 浙华Classroom 项目架构文档
 
 ## 项目概述
 
-### 改造目标
-将原本基于浏览器localStorage存储的浙华Classroom班级管理平台改造为基于SQLite数据库的后端存储架构，提升数据持久性、可扩展性和系统稳定性。
-
-### 改造前架构
-- **前端**: Vue 3 + Pinia + Vue Router
-- **数据存储**: 浏览器localStorage
-- **问题**: 数据易丢失、无法跨设备同步、扩展性差
-
-### 改造后架构
-- **前端**: Vue 3 + Pinia + Vue Router (保持不变)
-- **后端**: Node.js + Express + SQLite + Sequelize ORM
-- **数据存储**: SQLite数据库文件
-- **优势**: 数据持久化、支持并发访问、易于扩展
+浙华Classroom 是一个现代化的班级管理平台，旨在提供高效的班级、课程、学生及待办事项管理功能。
+项目采用前后端分离架构，后端基于 Node.js/Express，前端基于 Vue 3，数据存储采用 **MySQL** 数据库，确保了数据的高可靠性和高并发处理能力。
 
 ## 技术栈
 
-### 后端技术
-- **Node.js**: v24.8.0
-- **Express**: Web框架
-- **SQLite**: 轻量级数据库
-- **Sequelize**: ORM框架
-- **CORS**: 跨域资源共享
-- **Multer**: 文件上传处理
+### 后端
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MySQL 5.7/8.0
+- **ORM**: Sequelize (支持 MySQL 方言)
+- **Authentication**: JWT (JSON Web Tokens)
+- **Object Storage**: 阿里云 OSS (可选，用于文件上传)
 
-### 前端技术
-- **Vue 3**: 前端框架
-- **Pinia**: 状态管理
-- **Vue Router**: 路由管理
-- **Axios**: HTTP客户端 (可选)
+### 前端
+- **Framework**: Vue 3 (Composition API)
+- **State Management**: Pinia
+- **Routing**: Vue Router
+- **UI Styling**: CSS3 Variables, Glassmorphism Design
+- **HTTP Client**: Native Fetch API (封装于 `request.js`)
+
+## 项目结构
+
 
 ## 项目结构
 
@@ -70,7 +63,18 @@ zj-classroom/
 
 ### 数据表结构
 
-#### 1. classes (班级表)
+#### 1. users (用户表)
+| 字段名 | 类型 | 约束 | 说明 |
+|--------|------|------|------|
+| id | INTEGER | PRIMARY KEY, AUTO_INCREMENT | 用户ID |
+| username | STRING | NOT NULL, UNIQUE | 用户名 |
+| email | STRING | NOT NULL, UNIQUE | 邮箱 |
+| password_hash | STRING | NOT NULL | 密码哈希 |
+| role | ENUM | DEFAULT 'student' | 角色 |
+| createdAt | DATETIME | | 创建时间 |
+| updatedAt | DATETIME | | 更新时间 |
+
+#### 2. classes (班级表)
 | 字段名 | 类型 | 约束 | 说明 |
 |--------|------|------|------|
 | id | INTEGER | PRIMARY KEY, AUTO_INCREMENT | 班级ID |
@@ -133,12 +137,14 @@ zj-classroom/
 | updatedAt | DATETIME | | 更新时间 |
 
 ### 表关系
+- `users` 1:N `classes` (一个用户创建多个班级)
 - `classes` 1:N `students` (一个班级有多个学生)
 - `classes` 1:N `courses` (一个班级有多个课程)
 - `classes` 1:N `todos` (一个班级有多个待办事项)
 - `course_library` 1:N `courses` (课程库课程可被多个班级使用)
 
-## API接口设计
+
+(See `API_DOCUMENTATION.md` for detailed API specifications)
 
 ### 基础URL
 ```
