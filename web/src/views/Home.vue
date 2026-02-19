@@ -437,7 +437,14 @@ async function handleCreateClass() {
       router.push({ name: 'class-detail', params: { id: newId } })
     }
   } catch (error) {
-    alert('创建班级失败，请确保后端服务已启动')
+    console.error(error)
+    if (error.response && error.response.status === 401) {
+      alert('登录已过期，请重新登录')
+      router.push('/login')
+    } else {
+      const msg = error.response?.data?.message || error.message || '未知错误'
+      alert(`创建班级失败: ${msg} (请确保后端服务已启动)`)
+    }
   }
 }
 
