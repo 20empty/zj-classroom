@@ -47,7 +47,7 @@ zj-classroom/
 │   │   └── courseLibrary.js   # 课程库API
 │   ├── index.js               # 服务器入口
 │   ├── package.json           # 依赖配置
-│   └── database.sqlite        # SQLite数据库文件
+
 └── web/                       # 前端应用
     ├── src/
     │   ├── stores/            # Pinia状态管理
@@ -485,13 +485,14 @@ curl -X POST http://localhost:3001/api/classes \
 ## 常见问题
 
 ### Q1: 数据库文件位置
-A: SQLite数据库文件位于 `backend/database.sqlite`
+A: MySQL数据库配置位于 `backend/config/database.js`，连接信息需在 `.env` 文件中配置。
 
 ### Q2: 如何备份数据
-A: 直接复制 `database.sqlite` 文件即可
+
+A: 使用 `mysqldump` 工具导出 MySQL 数据库，或使用阿里云 RDS 自动备份功能。
 
 ### Q3: 如何重置数据
-A: 删除 `database.sqlite` 文件，重启后端服务
+A: 在 MySQL 中 Drop 相关数据表，重启后端服务将自动重新同步表结构。
 
 ### Q4: 端口冲突问题
 A: 修改 `backend/index.js` 中的端口号，或杀掉占用端口的进程

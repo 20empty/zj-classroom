@@ -1,24 +1,21 @@
-/**
- * Standard API Response Formatter
- */
-const successResponse = (res, data, message = 'Success') => {
-    return res.status(200).json({
-        success: true,
-        message,
-        data
-    });
-};
+class Response {
+    constructor(success, data, message, statusCode = 200) {
+        this.success = success;
+        this.data = data;
+        this.message = message;
+        this.statusCode = statusCode;
+    }
 
-const errorResponse = (res, error, statusCode = 500) => {
-    const message = error.message || error || 'Internal Server Error';
-    return res.status(statusCode).json({
-        success: false,
-        message,
-        error: process.env.NODE_ENV === 'development' ? error : undefined
-    });
-};
+    static success(res, data, message = 'Success', statusCode = 200) {
+        return res.status(statusCode).json(new Response(true, data, message, statusCode));
+    }
 
-module.exports = {
-    successResponse,
-    errorResponse
-};
+    static error(res, message = 'Error', statusCode = 500, error = null) {
+        if (error && process.env.NODE_ENV !== 'production') {
+            console.error(error); // Or use logger.error(error) if imported
+        }
+        return res.status(statusCode).json(new Response(false, null, message, statusCode));
+    }
+}
+
+module.exports = Response;
