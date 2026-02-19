@@ -5,8 +5,27 @@ const path = require('path');
 const { initDatabase } = require('./models');
 const errorHandler = require('./middlewares/errorHandler');
 
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const morgan = require('morgan');
+const logger = require('./utils/logger');
+
 const app = express();
 const port = process.env.PORT || 3001;
+
+// Security Middleware
+app.use(helmet());
+
+// Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again after 15 minutes'
+});
+app.use('/api', limiter);
+
+// Logging Middleware
+app.use(morgan('combined', { stream: logger.stream }));
 
 // 导入路由
 const classesRoutes = require('./routes/classes');
@@ -48,10 +67,10 @@ const startServer = async () => {
 
     // 启动服务器
     app.listen(port, () => {
-      console.log(`服务器已启动，端口：${port}`);
+      logger.info(`服务器已启动，端口：${port}`);
     });
   } catch (error) {
-    console.error('服务器启动失败:', error);
+    logger.error(`服务器启动失败: ${error.message}`);
     process.exit(1);
   }
 };
