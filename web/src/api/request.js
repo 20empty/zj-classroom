@@ -42,8 +42,23 @@ service.interceptors.response.use(
     },
     error => {
         console.error('Request Error:', error);
-        // Handle 401, 403, 500
-        return Promise.reject(error);
+
+        // Enhance global error handling UI interpretation
+        let message = '网络或服务器发生错误，请稍后再试';
+        if (error.response) {
+            if (error.response.status === 401) {
+                message = '会话已过期或未授权，请重新登录';
+                // Remove token to force clean state
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+            } else {
+                message = error.response.data?.message || error.response.data?.error || `请求出错 (${error.response.status})`;
+            }
+        } else if (error.message) {
+            message = error.message;
+        }
+
+        return Promise.reject(new Error(message));
     }
 );
 
